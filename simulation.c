@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 16:21:18 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/07/27 22:55:12 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/07/29 22:00:15 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,28 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = arg;
+	if (philo->id % 2 == 0)
+		usleep(500);
 	while (1)
 	{
-		if (philo->times_eaten >= philo->args->nbr_of_meals)
+		if (death_check(philo, 0))
 			return (NULL);
-		printf("\n");
 		pthread_mutex_lock(&philo->mtx[philo->left]);
-		ft_print_msg(philo, "has taken a fork");
+		ft_print_msg(philo, "has taken a left fork");
+		if (death_check(philo, 1))
+			return (NULL);
 		pthread_mutex_lock(&philo->mtx[philo->right]);
-		ft_print_msg(philo, "has taken a fork");
+		ft_print_msg(philo, "has taken a right fork");
+		if (death_check(philo, 2))
+			return (NULL);
 		ft_eat(philo);
-		ft_print_msg(philo, "is eating");
-		pthread_mutex_unlock(&(philo->mtx[philo->left]));
 		pthread_mutex_unlock(&(philo->mtx[philo->right]));
+		pthread_mutex_unlock(&(philo->mtx[philo->left]));
+		if (philo->times_eaten >= philo->args->nbr_of_meals ||
+			death_check(philo, 0))
+			return (NULL);
 		usleep(philo->args->sleep_dur  * 1000);
+		ft_print_msg(philo, "is sleeping");
 	}
 }
 

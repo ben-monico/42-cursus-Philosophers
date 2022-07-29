@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:53:38 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/07/27 21:13:17 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/07/29 20:23:44 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	init_all(t_global *g)
 		g->philo[i].right = i + 1;
 		if (i == (g->args->philo_nbr - 1))
 			g->philo[i].right = 0;
-		g->philo[i].starve_time = -1;
+		g->philo[i].starve_time = 0;
 		g->philo[i].times_eaten = 0;
 	}
 	return (0);
@@ -46,6 +46,8 @@ int	init_all(t_global *g)
 
 int	parse_args(t_global *g, int ac, char **av)
 {
+	g->args->init_ms = 0;
+	g->args->death_track = 0;
 	g->args->philo_nbr = ft_atoi(av[1]);
 	g->args->ms_til_death = ft_atoi(av[2]);
 	g->args->eat_dur = ft_atoi(av[3]);
