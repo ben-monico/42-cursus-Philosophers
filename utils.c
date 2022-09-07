@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:48:52 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/08/22 19:13:09 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/09/07 19:13:58 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,25 +40,27 @@ int	ft_atoi(const char *str)
 void	ft_print_msg(t_philo *philo, char *str, int i)
 {
 	struct timeval			t;
-	// unsigned long			ms;
+	unsigned long			ms;
 
 	gettimeofday(&t, NULL);
-	pthread_mutex_lock(&(philo->printmtx));
-	if (i == 0)
+	pthread_mutex_lock(philo->printmtx);
+	if (i == 4)
+		return ;
+	/* if (i == 0)
 	{
 		pthread_mutex_lock(&(philo->death_mtx));
 		if (philo->args->death_track == 1)
 		{
-			pthread_mutex_unlock(&(philo->death_mtx));
 			pthread_mutex_unlock(&(philo->printmtx));
+			pthread_mutex_unlock(&(philo->death_mtx));
 			return ;
 		}
 		pthread_mutex_unlock(&(philo->death_mtx));
-	}
-	// ms = (t.tv_sec * 1000) + (t.tv_usec / 1000);
-	// printf("[%lu ms] %d %s\n", ms - philo->args->init_ms, philo->id, str);
-	printf("[%lu, %d ms] %d %s\n", t.tv_sec, t.tv_usec, philo->id, str);
-	pthread_mutex_unlock(&(philo->printmtx));
+	} */
+	ms = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	printf("[%lu ms] %d %s\n", ms - philo->args->init_ms, philo->id, str);
+	// printf("[%lu, %d ms] %d %s\n", t.tv_sec, (int)t.tv_usec, philo->id, str);
+	pthread_mutex_unlock(philo->printmtx);
 }
 
 int	starve_check(t_philo *philo)
@@ -82,21 +84,19 @@ int	starve_check(t_philo *philo)
 
 int	death_check(t_philo *philo, int i)
 {
-	pthread_mutex_lock(&(philo->death_mtx));
-	if (philo->args->death_track || starve_check(philo))
+	pthread_mutex_lock(philo->death_mtx);
+	if (philo->args->death_track == 0 && starve_check(philo) == 0)
 	{
-		pthread_mutex_unlock(&(philo->death_mtx));
-		if (i == 1)
-			pthread_mutex_unlock(&(philo->mtx[philo->left]));
-		else if (i == 2)
-		{
-			pthread_mutex_unlock(&(philo->mtx[philo->left]));
-			pthread_mutex_unlock(&(philo->mtx[philo->right]));
-		}
-		
-		return (1);
+		pthread_mutex_unlock(philo->death_mtx);
+		return (0);
 	}
-	else
-		pthread_mutex_unlock(&(philo->death_mtx));
-	return (0);
+	if (i == 1)
+		pthread_mutex_unlock(&(philo->mtx[philo->left]));
+	else if (i == 2)
+	{
+		pthread_mutex_unlock(&(philo->mtx[philo->right]));
+		pthread_mutex_unlock(&(philo->mtx[philo->left]));
+	}
+	pthread_mutex_unlock(philo->death_mtx);
+	return (1);
 }

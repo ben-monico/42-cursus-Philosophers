@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:53:38 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/08/22 19:12:14 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/09/07 19:16:54 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,25 +20,35 @@ void	ft_initms(t_philo *philo)
 	philo->args->init_ms = (t.tv_sec * 1000) + (t.tv_usec / 1000);
 }
 
-void	init_philo(t_global *g)
+int	init_philo(t_global *g)
 {
 	int	i;
 
 	i = -1;
 	while (++i < g->args->philo_nbr)
 	{
-		g->philo[i].args = g->args;
-		g->philo[i].printmtx = g->print;
+		g->philo[i].death_mtx = malloc(sizeof(pthread_mutex_t));
+		if (!g->philo[i].death_mtx)
+			return (1);
+		g->philo[i].printmtx = malloc(sizeof(pthread_mutex_t));
+		if (!g->philo[i].printmtx)
+			return (1);
+		g->philo[i].death_mtx = &g->deathmtx;
+		g->philo[i].printmtx = &g->print;
 		g->philo[i].mtx = g->mutexes;
-		g->philo[i].death_mtx = g->deathmtx;
+		g->philo[i].args = g->args;
 		g->philo[i].id = i + 1;
 		g->philo[i].left = i;
 		g->philo[i].right = i + 1;
 		if (i == (g->args->philo_nbr - 1))
-			g->philo[i].right = 0;
+		{
+			g->philo[i].left = 0;
+			g->philo[i].right = i;
+		}
 		g->philo[i].starve_time = 0;
 		g->philo[i].meals = 0;
 	}
+	return(0);
 }
 
 int	init_all(t_global *g)
@@ -51,11 +61,14 @@ int	init_all(t_global *g)
 	i = -1;
 	while (++i < g->args->philo_nbr)
 		pthread_mutex_init(&(g->mutexes[i]), NULL);
-	pthread_mutex_init(&g->print, NULL);
-	pthread_mutex_init(&g->deathmtx, NULL);
+	pthread_mutex_init(&(g->print), NULL);
+	pthread_mutex_init(&(g->deathmtx), NULL);
 	g->philo = malloc(sizeof(t_philo) * g->args->philo_nbr);
 	if (!g->philo)
+	{
+		free (g->mutexes);
 		return (1);
+	}
 	init_philo(g);
 	return (0);
 }
