@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:43:27 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/07/29 22:14:14 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/08/22 18:48:25 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,21 @@ typedef struct s_philo
 {
 	pthread_mutex_t	*mtx;
 	pthread_mutex_t	printmtx;
+	pthread_mutex_t	death_mtx;
 	pthread_t		tr;
 	t_args			*args;
 	int				id;
 	int				left;
 	int				right;
 	long			starve_time;
-	int				times_eaten;
+	int				meals;
 }	t_philo;
 
 typedef struct s_global
 {
 	pthread_mutex_t	*mutexes;
 	pthread_mutex_t	print;
+	pthread_mutex_t	deathmtx;
 	t_philo			*philo;
 	t_args			*args;
 }	t_global;
@@ -56,8 +58,10 @@ int		ft_atoi(const char *str);
 void	ft_eat(t_philo *philo);
 int		death_check(t_philo *philo, int i);
 void	ft_initms(t_philo *philo);
-void	ft_print_msg(t_philo *philo, char *str);
+void	ft_pickforks(t_philo *philo);
+void	ft_print_msg(t_philo *philo, char *str, int i);
 void	ft_simulation(t_philo *philo);
+void	ft_sleep(t_philo *philo);
 int		starve_check(t_philo *philo);
 
 #endif

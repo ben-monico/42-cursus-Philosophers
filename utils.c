@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:48:52 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/07/29 22:01:57 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/08/22 19:13:09 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,71 +37,55 @@ int	ft_atoi(const char *str)
 	return (result * sign);
 }
 
-void	ft_print_msg(t_philo *philo, char *str)
+void	ft_print_msg(t_philo *philo, char *str, int i)
 {
 	struct timeval			t;
-	unsigned long			ms;
-
-	pthread_mutex_lock(&philo->printmtx);
-	if (philo->args->init_ms == 0)
-			ft_initms(philo);
-	gettimeofday(&t, NULL);
-	ms = (t.tv_sec * 1000) + (t.tv_usec / 1000);
-	if (philo->args->death_track)
-		return ;
-	printf("%lu ms - %d %s\n", ms - philo->args->init_ms, philo->id, str);
-	pthread_mutex_unlock(&philo->printmtx);
-}
-
-void	ft_eat(t_philo *philo)
-{
-	struct timeval	t;
-	unsigned long			aux;
+	// unsigned long			ms;
 
 	gettimeofday(&t, NULL);
-	philo->times_eaten++;
-	aux = (t.tv_sec * 1000) + (t.tv_usec / 1000);
-	ft_print_msg(philo, "is eating");
-	while (((t.tv_sec * 1000) + (t.tv_usec / 1000)) - aux < (unsigned long)philo->args->eat_dur)
-		gettimeofday(&t, NULL);
-	philo->starve_time = aux + philo->args->eat_dur - philo->args->init_ms;
+	pthread_mutex_lock(&(philo->printmtx));
+	if (i == 0)
+	{
+		pthread_mutex_lock(&(philo->death_mtx));
+		if (philo->args->death_track == 1)
+		{
+			pthread_mutex_unlock(&(philo->death_mtx));
+			pthread_mutex_unlock(&(philo->printmtx));
+			return ;
+		}
+		pthread_mutex_unlock(&(philo->death_mtx));
+	}
+	// ms = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	// printf("[%lu ms] %d %s\n", ms - philo->args->init_ms, philo->id, str);
+	printf("[%lu, %d ms] %d %s\n", t.tv_sec, t.tv_usec, philo->id, str);
+	pthread_mutex_unlock(&(philo->printmtx));
 }
 
 int	starve_check(t_philo *philo)
 {	
 	struct timeval	t;
-	unsigned long	cur_time;
+	unsigned long	cur;
+	unsigned long	init;
 
-	if (philo->args->death_track == 1)
-		return (1);
 	gettimeofday(&t, NULL);
-	cur_time = ((t.tv_sec * 1000) + (t.tv_usec / 1000));
-	if ((cur_time - philo->args->init_ms) - philo->starve_time >= (unsigned long)philo->args->ms_til_death)
+	init = philo->args->init_ms;
+	cur = ((t.tv_sec * 1000) + (t.tv_usec / 1000));
+	if ((cur - init) - philo->starve_time
+		>= (unsigned long)philo->args->ms_til_death)
 	{
-		printf("%d has died after %lu\n", philo->id, cur_time - philo->args->init_ms - philo->starve_time);
-		ft_print_msg(philo, "has starved");
 		philo->args->death_track = 1;
+		ft_print_msg(philo, "has starved", 1);
 		return (1);
 	}
-	// printf("%d starve ms %lu\n",philo->id, (t.tv_sec * 1000) + (t.tv_usec / 1000)  - philo->args->init_ms - philo->starve_time);
 	return (0);
-}
-
-void	ft_initms(t_philo *philo)
-{
-	struct timeval	t;
-
-	gettimeofday(&t, NULL);
-	philo->args->init_ms = (t.tv_sec * 1000) + (t.tv_usec / 1000);
-	printf("%lu\n", philo->args->init_ms);
 }
 
 int	death_check(t_philo *philo, int i)
 {
-	if (philo->args->init_ms == 0)
-		return (0);
+	pthread_mutex_lock(&(philo->death_mtx));
 	if (philo->args->death_track || starve_check(philo))
 	{
+		pthread_mutex_unlock(&(philo->death_mtx));
 		if (i == 1)
 			pthread_mutex_unlock(&(philo->mtx[philo->left]));
 		else if (i == 2)
@@ -109,8 +93,10 @@ int	death_check(t_philo *philo, int i)
 			pthread_mutex_unlock(&(philo->mtx[philo->left]));
 			pthread_mutex_unlock(&(philo->mtx[philo->right]));
 		}
+		
 		return (1);
 	}
-	else 
-		return (0);
+	else
+		pthread_mutex_unlock(&(philo->death_mtx));
+	return (0);
 }
