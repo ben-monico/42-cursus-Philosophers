@@ -2,8 +2,7 @@ NAME = philo
 
 SRCS =	main.c\
 		simulation.c\
-		utils.c\
-		asan.c
+		utils.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -14,20 +13,7 @@ INCLUDES = -I .
 
 LINKERS = -lpthread
 
-
-ASAN := -fsanitize=address -fsanitize-recover=address
-ASAN += -fno-omit-frame-pointer -fno-common
-ASAN += -fsanitize=pointer-subtract -fsanitize=pointer-compare
-# Technicaly UBSan but works with ASan
-ASAN += -fsanitize=undefined
-# Technicaly LSan but works with ASan
-ASAN += -fsanitize=leak
-# Thread sanitizing flags
-TSAN := -fsanitize=thread
-# Memory sanitizing flags
-MSAN := -fsanitize=memory -fsanitize-memory-track-origins
-
-FLAGS = -Wall -Wextra -Werror ${TSAN} -g
+FLAGS = -Wall -Wextra -Werror -fsanitize=address -g
 
 .c.o:
 	$(CC) $(FLAGS) $(INCLUDES) -c $< -o $(<:.c=.o)

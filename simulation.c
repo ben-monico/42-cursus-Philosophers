@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 16:21:18 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/09/07 19:14:00 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/09/14 17:44:29 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ void	ft_simulation(t_philo *philo)
 
 	ft_initms(philo);
 	i = -1;
-	while(++i < philo->args->philo_nbr)
+	while (++i < philo->args->philo_nbr)
 		pthread_create(&(philo[i].tr), NULL, routine, philo + i);
 	i = -1;
-	while(++i < philo->args->philo_nbr)
+	while (++i < philo->args->philo_nbr)
 		pthread_join(philo[i].tr, NULL);
 }
 
@@ -36,8 +36,8 @@ void	*routine(void *arg)
 		usleep(500);
 	while (1)
 	{
-		if (philo->meals >= nb || death_check(philo, 0))
-				return (NULL);
+		if ((philo->meals >= nb && nb != -1) || death_check(philo, 0))
+			return (NULL);
 		if (ft_pickforks(philo) || ft_eat(philo) || ft_sleep(philo))
 			return (NULL);
 	}
@@ -45,13 +45,19 @@ void	*routine(void *arg)
 
 int	ft_pickforks(t_philo *philo)
 {
-		pthread_mutex_lock(&philo->mtx[philo->left]);
-		ft_print_msg(philo, "has taken a left fork", 0);
+	pthread_mutex_lock(&philo->mtx[philo->left]);
+	ft_print_msg(philo, "has taken a left fork", 0);
+	if (death_check(philo, 1))
+		return (1);
+	if (philo->left == philo->right)
+	{
+		usleep(1000 * philo->args->ms_til_death);
 		if (death_check(philo, 1))
 			return (1);
-		pthread_mutex_lock(&philo->mtx[philo->right]);
-		ft_print_msg(philo, "has taken a right fork", 0);
-		return (0);
+	}
+	pthread_mutex_lock(&philo->mtx[philo->right]);
+	ft_print_msg(philo, "has taken a right fork", 0);
+	return (0);
 }
 
 int	ft_eat(t_philo *philo)
@@ -65,6 +71,7 @@ int	ft_eat(t_philo *philo)
 	philo->meals++;
 	aux = (t.tv_sec * 1000) + (t.tv_usec / 1000);
 	ft_print_msg(philo, "is eating", 0);
+	philo->starve_time = aux - philo->args->init_ms;
 	while (((t.tv_sec * 1000) + (t.tv_usec / 1000)) - aux
 		< (unsigned long)philo->args->eat_dur)
 		gettimeofday(&t, NULL);

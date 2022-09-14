@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:43:27 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/09/07 19:01:59 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/09/14 16:24:29 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ typedef struct s_philo
 typedef struct s_global
 {
 	pthread_mutex_t	*mutexes;
-	pthread_mutex_t	print;
-	pthread_mutex_t	deathmtx;
+	pthread_mutex_t	*print;
+	pthread_mutex_t	*deathmtx;
 	t_philo			*philo;
 	t_args			*args;
 }	t_global;
@@ -57,6 +57,7 @@ typedef struct s_global
 int		ft_atoi(const char *str);
 int		ft_eat(t_philo *philo);
 int		death_check(t_philo *philo, int i);
+void	free_all(t_global *g);
 void	ft_initms(t_philo *philo);
 int		ft_pickforks(t_philo *philo);
 void	ft_print_msg(t_philo *philo, char *str, int i);
