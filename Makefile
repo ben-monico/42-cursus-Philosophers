@@ -2,6 +2,7 @@ NAME = philo
 
 SRCS =	main.c\
 		simulation.c\
+		actions.c\
 		utils.c\
 		death.c
 
@@ -12,7 +13,7 @@ CC = gcc
 
 INCLUDES = -I .
 
-LINKERS = -lpthread
+LINKERS = -pthread
 
 FLAGS = -Wall -Wextra -Werror -fsanitize=address -g
 

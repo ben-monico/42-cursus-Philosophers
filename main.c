@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:53:38 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/09/30 01:35:50 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/10/18 17:54:42 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,26 +47,22 @@ int	init_philo(t_global *g)
 	return (0);
 }
 
-int	init_all(t_global *g)
+int	alloc_all(t_global *g)
 {
 	int	i;
 
 	g->mutexes = malloc(sizeof(pthread_mutex_t) * g->args->philo_nbr);
-	if (!g->mutexes)
-		return (1);
-	g->arr = malloc(sizeof(int) * (g->args->philo_nbr + 1));
-	i = -1;
-	while (++i < g->args->philo_nbr + 1)
-		g->arr[i] = 0;
 	g->print = malloc(sizeof(pthread_mutex_t));
 	g->deathmtx = malloc(sizeof(pthread_mutex_t));
 	g->arrmtx = malloc(sizeof(pthread_mutex_t));
 	g->philo = malloc(sizeof(t_philo) * g->args->philo_nbr);
-	if (!g->philo)
-	{
-		free (g->mutexes);
+	g->arr = malloc(sizeof(int) * (g->args->philo_nbr + 1));
+	if (!g->mutexes || !g->print || !g->deathmtx || !g->arrmtx
+		|| !g->philo || !g->arr)
 		return (1);
-	}	
+	i = -1;
+	while (++i < g->args->philo_nbr + 1)
+		g->arr[i] = 0;
 	i = -1;
 	while (++i < g->args->philo_nbr)
 		pthread_mutex_init(&(g->mutexes[i]), NULL);
@@ -104,7 +100,7 @@ int	main(int ac, char **av)
 		return (1);
 	if (parse_args(&g, ac, av))
 		return (1);
-	if (init_all(&g))
+	if (alloc_all(&g))
 		return (1);
 	ft_simulation(g.philo);
 	free_all(&g);

@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:43:27 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/10/18 15:05:44 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/10/18 17:34:31 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,9 @@ void	free_all(t_global *g);
 void	ft_initms(t_philo *philo);
 int		ft_pickforks(t_philo *philo);
 void	ft_print_msg(t_philo *philo, char *str);
+int		ft_singlephilo(t_philo *philo);
 int		ft_timeleft(t_philo *philo);
+void	ft_unlockforks(t_philo *philo);
 void	*routine(void *arg);
 void	ft_simulation(t_philo *philo);
 int		ft_sleep(t_philo *philo);

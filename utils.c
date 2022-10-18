@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:48:52 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/10/18 15:05:37 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/10/18 17:47:21 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,10 @@ void	ft_print_msg(t_philo *philo, char *str)
 void	free_all(t_global *g)
 {
 	free(g->mutexes);
+	free(g->arr);
 	free(g->args);
 	free(g->print);
 	free(g->deathmtx);
+	free(g->arrmtx);
 	free(g->philo);
 }

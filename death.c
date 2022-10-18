@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 14:31:41 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/10/18 15:06:08 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/10/18 17:46:34 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	starve_check(t_philo *philo)
 		>= (unsigned long)philo->args->starve_time)
 	{
 		philo->args->death_track = 1;
-		ft_print_msg(philo, "has starved");
+		ft_print_msg(philo, "has died");
 		return (1);
 	}
 	return (0);
