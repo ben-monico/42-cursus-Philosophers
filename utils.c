@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:48:52 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/10/03 14:32:54 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/10/18 15:05:37 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,14 @@ int	ft_atoi(const char *str)
 	return (result * sign);
 }
 
-void	ft_print_msg(t_philo *philo, char *str, int i)
+void	ft_print_msg(t_philo *philo, char *str)
 {
 	struct timeval			t;
 	unsigned long			ms;
 
 	gettimeofday(&t, NULL);
-	pthread_mutex_lock(philo->printmtx);
-	if (i == 4)
-		return ;
 	ms = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	pthread_mutex_lock(philo->printmtx);
 	printf("[%lu ms] %d %s\n", ms - philo->args->init_ms, philo->id, str);
 	pthread_mutex_unlock(philo->printmtx);
 }
