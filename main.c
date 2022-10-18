@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:53:38 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/09/14 17:26:10 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/09/30 01:35:50 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ int	init_philo(t_global *g)
 	i = -1;
 	while (++i < g->args->philo_nbr)
 	{
+		g->philo[i].arr = g->arr;
+		g->philo[i].arr_mtx = g->arrmtx;
 		g->philo[i].death_mtx = g->deathmtx;
 		g->philo[i].printmtx = g->print;
 		g->philo[i].mtx = g->mutexes;
@@ -39,7 +41,7 @@ int	init_philo(t_global *g)
 			g->philo[i].left = 0;
 			g->philo[i].right = i;
 		}
-		g->philo[i].starve_time = 0;
+		g->philo[i].lastmeal_ms = 0;
 		g->philo[i].meals = 0;
 	}
 	return (0);
@@ -52,8 +54,13 @@ int	init_all(t_global *g)
 	g->mutexes = malloc(sizeof(pthread_mutex_t) * g->args->philo_nbr);
 	if (!g->mutexes)
 		return (1);
+	g->arr = malloc(sizeof(int) * (g->args->philo_nbr + 1));
+	i = -1;
+	while (++i < g->args->philo_nbr + 1)
+		g->arr[i] = 0;
 	g->print = malloc(sizeof(pthread_mutex_t));
 	g->deathmtx = malloc(sizeof(pthread_mutex_t));
+	g->arrmtx = malloc(sizeof(pthread_mutex_t));
 	g->philo = malloc(sizeof(t_philo) * g->args->philo_nbr);
 	if (!g->philo)
 	{
@@ -65,6 +72,7 @@ int	init_all(t_global *g)
 		pthread_mutex_init(&(g->mutexes[i]), NULL);
 	pthread_mutex_init(g->print, NULL);
 	pthread_mutex_init(g->deathmtx, NULL);
+	pthread_mutex_init(g->arrmtx, NULL);
 	init_philo(g);
 	return (0);
 }
@@ -74,7 +82,7 @@ int	parse_args(t_global *g, int ac, char **av)
 	g->args->init_ms = 0;
 	g->args->death_track = 0;
 	g->args->philo_nbr = ft_atoi(av[1]);
-	g->args->ms_til_death = ft_atoi(av[2]);
+	g->args->starve_time = ft_atoi(av[2]);
 	g->args->eat_dur = ft_atoi(av[3]);
 	g->args->sleep_dur = ft_atoi(av[4]);
 	g->args->nbr_of_meals = -1;

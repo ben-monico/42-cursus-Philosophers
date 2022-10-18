@@ -2,7 +2,8 @@ NAME = philo
 
 SRCS =	main.c\
 		simulation.c\
-		utils.c
+		utils.c\
+		death.c
 
 OBJS = $(SRCS:.c=.o)
 

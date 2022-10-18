@@ -6,7 +6,7 @@
 /*   By: bcarreir <bcarreir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 16:43:27 by bcarreir          #+#    #+#             */
-/*   Updated: 2022/09/14 16:24:29 by bcarreir         ###   ########.fr       */
+/*   Updated: 2022/10/03 15:13:23 by bcarreir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ typedef struct s_args
 {
 	unsigned long	init_ms;
 	int				philo_nbr;
-	int				ms_til_death;
+	int				starve_time;
 	int				eat_dur;
 	int				sleep_dur;
 	int				nbr_of_meals;
@@ -36,12 +36,14 @@ typedef struct s_philo
 	pthread_mutex_t	*mtx;
 	pthread_mutex_t	*printmtx;
 	pthread_mutex_t	*death_mtx;
+	pthread_mutex_t	*arr_mtx;
+	int				*arr;
 	pthread_t		tr;
 	t_args			*args;
 	int				id;
 	int				left;
 	int				right;
-	long			starve_time;
+	long			lastmeal_ms;
 	int				meals;
 }	t_philo;
 
@@ -50,8 +52,10 @@ typedef struct s_global
 	pthread_mutex_t	*mutexes;
 	pthread_mutex_t	*print;
 	pthread_mutex_t	*deathmtx;
+	pthread_mutex_t	*arrmtx;
 	t_philo			*philo;
 	t_args			*args;
+	int				*arr;
 }	t_global;
 
 int		ft_atoi(const char *str);
@@ -61,6 +65,7 @@ void	free_all(t_global *g);
 void	ft_initms(t_philo *philo);
 int		ft_pickforks(t_philo *philo);
 void	ft_print_msg(t_philo *philo, char *str, int i);
+int		ft_timeleft(t_philo *philo);
 void	*routine(void *arg);
 void	ft_simulation(t_philo *philo);
 int		ft_sleep(t_philo *philo);

@@ -1,0 +1,10 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory `/Users/benmonico/Desktop/philos'
+ 
+gcc  -Wall -Wextra -Werror -fsanitize=address -g -I . -c main.c -o main.o
+gcc  -Wall -Wextra -Werror -fsanitize=address -g -I . -c simulation.c -o simulation.o
+gcc  -Wall -Wextra -Werror -fsanitize=address -g -I . -c utils.c -o utils.o
+gcc  -Wall -Wextra -Werror -fsanitize=address -g -I . -c death.c -o death.o
+gcc  -Wall -Wextra -Werror -fsanitize=address -g -lpthread main.o simulation.o utils.o death.o -o philo
+make: Leaving directory `/Users/benmonico/Desktop/philos'
+ 
